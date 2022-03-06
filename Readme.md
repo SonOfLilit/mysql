@@ -219,6 +219,7 @@ When establishing a connection, you can set the following options:
   to the MySQL server. (Default: `10000`)
 * `stringifyObjects`: Stringify objects instead of converting to values. See
 issue [#501](https://github.com/mysqljs/mysql/issues/501). (Default: `false`)
+* `allowObjectValues`: If false, trying to use objects as values without `stringifyObjects` will throw `TypeError`. See SqlString issue [#60](https://github.com/mysqljs/sqlstring/issues/60). From 3.0 will be set to `false` by default. Setting to `false` is recommended. Not setting explicitly will result in deprecation warning. (Default: `true`)
 * `insecureAuth`: Allow connecting to MySQL instances that ask for the old
   (insecure) authentication method. (Default: `false`)
 * `typeCast`: Determines if column values should be converted to native
@@ -791,12 +792,14 @@ Different value types are escaped differently, here is how:
 * Arrays are turned into list, e.g. `['a', 'b']` turns into `'a', 'b'`
 * Nested arrays are turned into grouped lists (for bulk inserts), e.g. `[['a',
   'b'], ['c', 'd']]` turns into `('a', 'b'), ('c', 'd')`
-* Objects that have a `toSqlString` method will have `.toSqlString()` called
-  and the returned value is used as the raw SQL.
-* Objects are turned into `key = 'val'` pairs for each enumerable property on
-  the object. If the property's value is a function, it is skipped; if the
-  property's value is an object, toString() is called on it and the returned
-  value is used.
+* To [improve our security posture](https://github.com/mysqljs/sqlstring/issues/60),
+  a configuration option was added `allowObjectValues`. If it's turned off (nondefault now, but will become default from version 3.0.0), trying to escape an object will throw `TypeError`. Otherwise:
+  * Objects that have a `toSqlString` method will have `.toSqlString()` called
+    and the returned value is used as the raw SQL.
+  * Objects are turned into `key = 'val'` pairs for each enumerable property on
+    the object. If the property's value is a function, it is skipped; if the
+    property's value is an object, toString() is called on it and the returned
+    value is used.
 * `undefined` / `null` are converted to `NULL`
 * `NaN` / `Infinity` are left as-is. MySQL does not support these, and trying
   to insert them as values will trigger MySQL errors until they implement

@@ -47,16 +47,20 @@ test('SqlString.escape', {
     assert.equal(SqlString.escape(5), '5');
   },
 
-  'objects are turned into key value pairs': function() {
-    assert.equal(SqlString.escape({a: 'b', c: 'd'}), "`a` = 'b', `c` = 'd'");
+  'objects are turned into key value pairs when allowObjectValues=true': function() {
+    assert.equal(SqlString.escape({a: 'b', c: 'd'}, false, null, true), "`a` = 'b', `c` = 'd'");
   },
 
-  'objects function properties are ignored': function() {
-    assert.equal(SqlString.escape({a: 'b', c: function() {}}), "`a` = 'b'");
+  'objects throw if not allowObjectValues': function() {
+    assert.throws(function() { SqlString.escape({a: 'b', c: 'd'}); });
   },
 
-  'nested objects are cast to strings': function() {
-    assert.equal(SqlString.escape({a: {nested: true}}), "`a` = '[object Object]'");
+  'objects function properties are ignored when allowObjectValues=true': function() {
+    assert.equal(SqlString.escape({a: 'b', c: function() {}}, false, null, true), "`a` = 'b'");
+  },
+
+  'nested objects are cast to strings when allowObjectValues=true': function() {
+    assert.equal(SqlString.escape({a: {nested: true}}, false, null, true), "`a` = '[object Object]'");
   },
 
   'arrays are turned into lists': function() {
@@ -170,9 +174,13 @@ test('SqlString.format', {
     assert.equal(sql, '?');
   },
 
-  'objects is converted to values': function () {
-    var sql = SqlString.format('?', { 'hello': 'world' }, false);
+  'objects is converted to values when allowObjectValues=true': function () {
+    var sql = SqlString.format('?', { 'hello': 'world' }, false, null, true);
     assert.equal(sql, "`hello` = 'world'");
+  },
+
+  'objects is converted to values unless allowObjectValues': function () {
+    assert.throws(function() { SqlString.format('?', { 'hello': 'world' }, false); });
   },
 
   'objects is not converted to values': function () {

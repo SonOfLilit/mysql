@@ -5,7 +5,9 @@ to add your changes here when sending pull requests. Also send corrections if
 you spot any mistakes.
 
 ## HEAD
-
+* Update `sqlstring` to 3.0.0
+* Added allowObjectValues option (defaulting to true for backwards compatibility) to not error on object values
+* Deprecated not setting allowObjectValues explicitly, recommended setting it to false
 * Support Node.js 14.x
 * Support Node.js 15.x
 * Update `bignumber.js` to 9.0.2

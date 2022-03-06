@@ -1,6 +1,6 @@
 var assert     = require('assert');
 var common     = require('../../common');
-var connection = common.createConnection({port: common.fakeServerPort});
+var connection = common.createConnection({port: common.fakeServerPort, allowObjectValues: false});
 
 var server = common.createFakeServer();
 // As seen in https://maxwelldulin.com/BlogPost?post=9185867776 and https://flattsecurity.medium.com/finding-an-unseen-sql-injection-by-bypassing-escape-functions-in-mysqljs-mysql-90b27f6542b4
@@ -15,9 +15,7 @@ var values = [{password: 1}];
 server.listen(common.fakeServerPort, function (err) {
   assert.ifError(err);
 
-  connection.query(sqlQuery, values, function (err, rows) {
-    assert.strictEqual(err.sql, 'password = `password` = 1');
-    connection.destroy();
-    server.destroy();
-  });
+  assert.throws(function() { connection.query(sqlQuery, values); });
+  connection.destroy();
+  server.destroy();
 });

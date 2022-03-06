@@ -57,13 +57,16 @@ exports.createQuery = function createQuery(sql, values, callback) {
  * @param {*} value The value to escape
  * @param {boolean} [stringifyObjects=false] Setting if objects should be stringified
  * @param {string} [timeZone=local] Setting for time zone to use for Date conversion
+ * @param {boolean} [allowObjectValues=true] Setting if object serialization should be enabled
  * @return {string} Escaped string value
  * @public
  */
-exports.escape = function escape(value, stringifyObjects, timeZone) {
+exports.escape = function escape(value, stringifyObjects, timeZone, allowObjectValues) {
   var SqlString = loadClass('SqlString');
 
-  return SqlString.escape(value, stringifyObjects, timeZone);
+  allowObjectValues = allowObjectValues !== false;
+
+  return SqlString.escape(value, stringifyObjects, timeZone, allowObjectValues);
 };
 
 /**
@@ -85,13 +88,16 @@ exports.escapeId = function escapeId(value, forbidQualified) {
  * @param {array} [values] Any values to insert into placeholders in sql
  * @param {boolean} [stringifyObjects=false] Setting if objects should be stringified
  * @param {string} [timeZone=local] Setting for time zone to use for Date conversion
+ * @param {boolean} [allowObjectValues=true] Setting if object serialization should be enabled
  * @return {string} Formatted SQL string
  * @public
  */
-exports.format = function format(sql, values, stringifyObjects, timeZone) {
+exports.format = function format(sql, values, stringifyObjects, timeZone, allowObjectValues) {
   var SqlString = loadClass('SqlString');
 
-  return SqlString.format(sql, values, stringifyObjects, timeZone);
+  allowObjectValues = allowObjectValues !== false;
+
+  return SqlString.format(sql, values, stringifyObjects, timeZone, allowObjectValues);
 };
 
 /**
